@@ -73,9 +73,12 @@ class Recover_role:
     @recoverroleset.command(pass_context=True, no_pm=True)
     async def info(self, ctx):
         """Displays your current roles in the recovery table."""
-        users_roles = self.json[ctx.message.server.id][ctx.message.author.id][roles]
-        await self.bot.say(':white_check_mark: Your current roles are: {}'.format(ctx.message.author.roles))
-        await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
+        server = ctx.message.server.id
+        author = ctx.message.author
+        await self.bot.say(':white_check_mark: Your current roles are: {}'.format(author.roles))
+        if author.id in self.json[server]:
+            users_roles = self.json[server][author.id][roles]
+            await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
 
     @recoverroleset.command(pass_context=True, no_pm=True)
     async def add(self, ctx):
