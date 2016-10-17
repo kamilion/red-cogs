@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from cogs.utils.dataIO import dataIO
 import logging
-from tabulate import tabulate
 from .utils import checks
 from __main__ import send_cmd_help
 import os
