@@ -85,9 +85,14 @@ class Recover_role:
         """Displays your current roles in the recovery table."""
         server = ctx.message.server.id
         author = ctx.message.author
+        await self.bot.say('Server roles available:')
+        for thing in server.roles:
+            if thing.name != "@everyone":
+                await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
         await self.bot.say(':white_check_mark: Your current roles are: {}'.format(author.roles))
         for thing in author.roles:
-            await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
+            if thing.name != "@everyone":
+                await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
         if author.id in self.json[server]:
             users_roles = self.json[server][author.id][roles]
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
