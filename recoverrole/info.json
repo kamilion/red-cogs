@@ -1,0 +1,7 @@
+{
+    "AUTHOR" : "Kamilion",
+    "INSTALL_MSG" : "You have installed RecoverRole, to set this cog up use the command ``recoverroleset``.",
+    "NAME" : "RecoverRole",
+    "SHORT" : "Allow users to recover previously held roles.",
+    "DESCRIPTION" : "Allow your users to recover previously held roles, this cog will apply and set the roles of users who return to the server after leaving."
+}
