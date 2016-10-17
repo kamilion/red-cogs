@@ -86,7 +86,7 @@ class Recover_role:
         server = ctx.message.server.id
         author = ctx.message.author
         await self.bot.say('Server roles available:')
-        for thing in server.roles:
+        for thing in ctx.message.server.roles:
             if thing.name != "@everyone":
                 await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
         await self.bot.say(':white_check_mark: Your current roles are: {}'.format(author.roles))
