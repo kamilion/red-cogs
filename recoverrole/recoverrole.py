@@ -15,9 +15,8 @@ class Recover_role:
     # {
     # Server : {
     #   Toggle: True/False
-    #   Roles : {
-    #       Price :
-    #       Name :
+    #   User : {
+    #       Roles :
     #       }
     #    }
     # }
@@ -27,6 +26,17 @@ class Recover_role:
         self.json = {}
         self.location = 'data/recover_role/settings.json'
         self.json = dataIO.load_json(self.location)
+
+    def _get_server_from_id(self, serverid):
+        return discord.utils.get(self.bot.servers, id=serverid)
+
+    def _get_role_from_id(self, serverid, roleid):
+        server = self._get_server_from_id(server)
+        try:
+            roles = server.roles
+        except AttributeError:
+            raise RoleNotFound(server, roleid)
+        return discord.utils.get(roles, id=roleid)
 
     @commands.command(pass_context=True, no_pm=True)
     async def recoverrole(self, ctx):
@@ -76,6 +86,8 @@ class Recover_role:
         server = ctx.message.server.id
         author = ctx.message.author
         await self.bot.say(':white_check_mark: Your current roles are: {}'.format(author.roles))
+        for thing in author.roles:
+            await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
         if author.id in self.json[server]:
             users_roles = self.json[server][author.id][roles]
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
@@ -113,7 +125,7 @@ class Recover_role:
             await self.bot.say(':white_check_mark: Toggle disabled! You can no longer recover roles on this server.')
         else:
             self.json[server]['toggle'] = True
-            await self.bot.say(':white_check_mark: Toggle enabled! You can now recover roles on this server.!')
+            await self.bot.say(':white_check_mark: Toggle enabled! You can now recover roles on this server.')
         log.debug('Wrote toggle to {} in server ID({})'.format(self.json[server]['toggle'], server))
         dataIO.save_json(self.location, self.json)
 
