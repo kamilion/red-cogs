@@ -31,7 +31,7 @@ class Recover_role:
         return discord.utils.get(self.bot.servers, id=serverid)
 
     def _get_role_from_id(self, serverid, roleid):
-        server = self._get_server_from_id(server)
+        server = self._get_server_from_id(serverid)
         try:
             roles = server.roles
         except AttributeError:
