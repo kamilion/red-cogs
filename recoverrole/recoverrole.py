@@ -52,7 +52,7 @@ class Recover_role:
                 role_ids = self.json[server][author.id]['roles']
                 users_roles = []
                 for thing in role_ids:
-                    users_roles.append(_get_role_from_id(server, thing))
+                    users_roles.append(self._get_role_from_id(server, thing))
                 msg = 'Are you sure you want to recover this role?\nType *"Yes"* to confirm.'
                 log.debug('USER({}) has requested a role recovery'.format(author.id))
                 answer = await self.bot.wait_for_message(timeout=30, author=author)
@@ -92,7 +92,7 @@ class Recover_role:
             role_ids = self.json[server][author.id]['roles']
             users_roles = []
             for thing in role_ids:
-                users_roles.append(_get_role_from_id(server, thing))
+                users_roles.append(self._get_role_from_id(server, thing))
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
 
     @recoverroleset.command(pass_context=True, no_pm=True)
