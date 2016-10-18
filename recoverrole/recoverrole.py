@@ -49,7 +49,7 @@ class Recover_role:
             await self.bot.say(':warning: RecoverRole is disabled on this server. Ye cannot get ye flask.')
         else:
             if author.id in self.json[server]:
-                role_ids = self.json[server][author.id][roles]
+                role_ids = self.json[server][author.id]['roles']
                 users_roles = {}
                 for thing in role_ids:
                     users_roles.append(_get_role_from_id(server, thing))
@@ -89,7 +89,7 @@ class Recover_role:
         server = ctx.message.server.id
         author = ctx.message.author
         if author.id in self.json[server]:
-            role_ids = self.json[server][author.id][roles]
+            role_ids = self.json[server][author.id]['roles']
             users_roles = {}
             for thing in role_ids:
                 users_roles.append(_get_role_from_id(server, thing))
