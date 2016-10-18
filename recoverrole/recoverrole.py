@@ -49,16 +49,18 @@ class Recover_role:
             await self.bot.say(':warning: RecoverRole is disabled on this server. Ye cannot get ye flask.')
         else:
             if author.id in self.json[server]:
-                await self.bot.say('Are you sure you want to recover these role?\nType *"Yes"* to confirm.')
+                await self.bot.say('Are you sure you want to recover your previously stored roles?\n\nType *"Yes"* to confirm.')
                 log.debug('USER({}) has requested a role recovery'.format(author.id))
                 answer = await self.bot.wait_for_message(timeout=30, author=author)
                 if answer is None:
-                    await self.bot.say(':warning: {}, you didn\'t respond in time.'.format(author.display_name))
+                    await self.bot.say(':warning: {}, you didn\'t respond affirmatively in time.'.format(author.display_name))
                     log.debug('USER({}) failed to respond to recover roles.'.format(author.id))
                 elif 'yes' in answer.content.lower() and author.id in self.json[server]:
                     try:
                         for thing in self.json[server][author.id]['roles']:
-                            await self.bot.add_roles(author, self._get_role_from_id(server, thing))
+                            new_role = self._get_role_from_id(server, thing)
+                            await self.bot.add_roles(author, new_role)
+                            await self.bot.say(':white_check_mark: Recovered ROLE({0.name}) with ID({0.id}).'.format(new_role))
                         await self.bot.say(':white_check_mark: Your roles have been recovered.')
                         log.debug('USER({}) successfully recovered roles.'.format(author.id))
                     except discord.Forbidden:
@@ -89,7 +91,7 @@ class Recover_role:
             role_ids = self.json[server][author.id]['roles']
             users_roles = []
             for thing in role_ids:
-                users_roles.append(self._get_role_from_id(server, thing))
+                users_roles.append(self._get_role_from_id(server, thing).name)
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
 
     @recoverroleset.command(pass_context=True, no_pm=True)
@@ -98,13 +100,15 @@ class Recover_role:
         server = ctx.message.server.id
         author = ctx.message.author
         existing_roles = []
+        existing_role_names = []
         for thing in author.roles:
             if thing.name != "@everyone":
                 existing_roles.append(thing.id)
+                existing_role_names.append(thing.name)
         self.json[server][author.id] = {'roles': existing_roles}
         dataIO.save_json(self.location, self.json)
         log.debug('Wrote ROLES({}) for USER({}) from SERVER({})'.format(existing_roles, author.display_name, server))
-        await self.bot.say(':white_check_mark: Added {} to the recovery list for {}.'.format(author.roles, author.display_name))
+        await self.bot.say(':white_check_mark: Added {} to the recovery list for {}.'.format(existing_role_names, author.display_name))
 
     @recoverroleset.command(hidden=True, pass_context=True, no_pm=True)
     async def removeme(self, ctx):
