@@ -49,7 +49,10 @@ class Recover_role:
             await self.bot.say(':warning: RecoverRole is disabled on this server. Ye cannot get ye flask.')
         else:
             if author.id in self.json[server]:
-                users_roles = self.json[server][author.id][roles]
+                role_ids = self.json[server][author.id][roles]
+                users_roles = {}
+                for thing in role_ids:
+                    users_roles.append(_get_role_from_id(server, thing))
                 msg = 'Are you sure you want to recover this role?\nType *"Yes"* to confirm.'
                 log.debug('USER({}) has requested a role recovery'.format(author.id))
                 answer = await self.bot.wait_for_message(timeout=30, author=author)
@@ -85,16 +88,11 @@ class Recover_role:
         """Displays your current roles in the recovery table."""
         server = ctx.message.server.id
         author = ctx.message.author
-        await self.bot.say('Server roles available:')
-        for thing in ctx.message.server.roles:
-            if thing.name != "@everyone":
-                await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
-        await self.bot.say(':white_check_mark: Your current roles are: {}'.format(author.roles))
-        for thing in author.roles:
-            if thing.name != "@everyone":
-                await self.bot.say(':white_check_mark: ROLE({0.name}) with ID({0.id})'.format(thing))
         if author.id in self.json[server]:
-            users_roles = self.json[server][author.id][roles]
+            role_ids = self.json[server][author.id][roles]
+            users_roles = {}
+            for thing in role_ids:
+                users_roles.append(_get_role_from_id(server, thing))
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
 
     @recoverroleset.command(pass_context=True, no_pm=True)
@@ -102,9 +100,13 @@ class Recover_role:
         """Adds your current roles to the recovery table."""
         server = ctx.message.server.id
         author = ctx.message.author
-        self.json[server][author.id] = {'roles': author.roles}
+        existing_roles = []
+        for thing in author.roles:
+            if thing.name != "@everyone":
+                existing_roles.append(thing.id)
+        self.json[server][author.id] = {'roles': existing_roles}
         dataIO.save_json(self.location, self.json)
-        log.debug('Wrote ROLES({}) for USER({}) from SERVER({})'.format(author.roles, author.display_name, server))
+        log.debug('Wrote ROLES({}) for USER({}) from SERVER({})'.format(existing_roles, author.display_name, server))
         await self.bot.say(':white_check_mark: Added {} to the recovery list for {}.'.format(author.roles, author.display_name))
 
     @recoverroleset.command(hidden=True, pass_context=True, no_pm=True)
@@ -139,6 +141,24 @@ class Recover_role:
     async def dumprecoverycore(self, ctx):
         """Debug Code"""
         await self.bot.say('```\n{}```'.format(self.json))
+
+    @recoverroleset.command(hidden=True, pass_context=True)
+    @checks.admin_or_permissions(administrator=True)
+    async def dumpmyroles(self, ctx):
+        """Debug Code"""
+        author = ctx.message.author
+        for thing in author.roles:
+            if thing.name != "@everyone":
+                await self.bot.say(':white_check_mark: You are a ROLE({0.name}) with ID({0.id})'.format(thing))
+
+    @recoverroleset.command(hidden=True, pass_context=True)
+    @checks.admin_or_permissions(administrator=True)
+    async def dumpserverroles(self, ctx):
+        """Debug Code"""
+        await self.bot.say('Server roles available:')
+        for thing in ctx.message.server.roles:
+            if thing.name != "@everyone":
+                await self.bot.say(':white_check_mark: Server ROLE({0.name}) with ID({0.id})'.format(thing))
 
     async def _update_name(self, old, new):  # Change the 'name' variable in the role ID.
         if new.server.id in self.json:
