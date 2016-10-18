@@ -71,7 +71,6 @@ class Recover_role:
                 await self.bot.say(':warning: {}, you have no roles to recover.'.format(author.display_name))
 
     @commands.group(pass_context=True, no_pm=True)
-    @checks.admin_or_permissions(administrator=True)
     async def recoverroleset(self, ctx):
         """Manage the settings for RecoverRole"""
         server = ctx.message.server.id
@@ -81,6 +80,16 @@ class Recover_role:
             log.debug('Wrote server ID({})'.format(server))
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
+
+    @recoverroleset.command(pass_context=True, no_pm=True)
+    @checks.admin_or_permissions(administrator=True)
+    async def setup(self, ctx):
+        """Sets up the recovery table."""
+        server = ctx.message.server.id
+        if server not in self.json:  # Setup the 'server' block in in the dict
+            self.json[server] = {'toggle': True}
+            dataIO.save_json(self.location, self.json)
+            log.debug('Wrote server ID({})'.format(server))
 
     @recoverroleset.command(pass_context=True, no_pm=True)
     async def info(self, ctx):
@@ -144,7 +153,6 @@ class Recover_role:
         await self.bot.say('```\n{}```'.format(self.json))
 
     @recoverroleset.command(hidden=True, pass_context=True)
-    @checks.admin_or_permissions(administrator=True)
     async def dumpmyroles(self, ctx):
         """Debug Code"""
         author = ctx.message.author
