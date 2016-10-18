@@ -49,11 +49,7 @@ class Recover_role:
             await self.bot.say(':warning: RecoverRole is disabled on this server. Ye cannot get ye flask.')
         else:
             if author.id in self.json[server]:
-                role_ids = self.json[server][author.id]['roles']
-                users_roles = []
-                for thing in role_ids:
-                    users_roles.append(self._get_role_from_id(server, thing))
-                msg = 'Are you sure you want to recover this role?\nType *"Yes"* to confirm.'
+                await self.bot.say('Are you sure you want to recover these role?\nType *"Yes"* to confirm.')
                 log.debug('USER({}) has requested a role recovery'.format(author.id))
                 answer = await self.bot.wait_for_message(timeout=30, author=author)
                 if answer is None:
@@ -61,7 +57,8 @@ class Recover_role:
                     log.debug('USER({}) failed to respond to recover roles.'.format(author.id))
                 elif 'yes' in answer.content.lower() and author.id in self.json[server]:
                     try:
-                        await self.bot.add_roles(author, users_roles)
+                        for thing in self.json[server][author.id]['roles']:
+                            await self.bot.add_roles(author, self._get_role_from_id(server, thing))
                         await self.bot.say(':white_check_mark: Your roles have been recovered.')
                         log.debug('USER({}) successfully recovered roles.'.format(author.id))
                     except discord.Forbidden:
