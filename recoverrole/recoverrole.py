@@ -50,7 +50,7 @@ class Recover_role:
         else:
             if author.id in self.json[server]:
                 role_ids = self.json[server][author.id]['roles']
-                users_roles = {}
+                users_roles = []
                 for thing in role_ids:
                     users_roles.append(_get_role_from_id(server, thing))
                 msg = 'Are you sure you want to recover this role?\nType *"Yes"* to confirm.'
@@ -90,7 +90,7 @@ class Recover_role:
         author = ctx.message.author
         if author.id in self.json[server]:
             role_ids = self.json[server][author.id]['roles']
-            users_roles = {}
+            users_roles = []
             for thing in role_ids:
                 users_roles.append(_get_role_from_id(server, thing))
             await self.bot.say(':white_check_mark: Your stored roles are: {}'.format(users_roles))
